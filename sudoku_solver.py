@@ -5,6 +5,19 @@ from pip._vendor import requests
 import os
 import csv
 
+# TODO: change underlying data structure to pandas
+
+# class Sudoku:
+#     def __init__(self, level="medium"):
+#         self.board = []
+#         self.level = level
+#
+#     def generate_puzzle(self):
+#         response = requests.get("https://sugoku.herokuapp.com/board", params={"difficulty": self.level})
+#         response_dict = json.loads(response.text)
+#         return response_dict['board']
+
+
 def get_limits(row, col):
     BOX_SIZE = 3
 
@@ -64,8 +77,9 @@ def solve(board):
 
 
 def get_new_puzzle(level):
-    response = requests.get("https://sugoku.herokuapp.com/board?difficulty={}".format(level))
+    response = requests.get("https://sugoku.herokuapp.com/board", params={"difficulty": level})
     print(response.text)
+    print(response.url)
     response_dict = json.loads(response.text)
     return response_dict['board']
 
@@ -134,23 +148,11 @@ def test_validator():
     assert (boxes_valid(board) is False)
 
 
-test_validator()
+# test_validator()
 
 
 def main():
     board = get_new_puzzle("hard")
-
-    # board = [
-    #     [7, 8, 0, 4, 0, 0, 1, 2, 0],
-    #     [6, 0, 0, 0, 7, 5, 0, 0, 9],
-    #     [0, 0, 0, 6, 0, 1, 0, 7, 8],
-    #     [0, 0, 7, 0, 4, 0, 2, 6, 0],
-    #     [0, 0, 1, 0, 5, 0, 9, 3, 0],
-    #     [9, 0, 4, 0, 6, 0, 0, 0, 5],
-    #     [0, 7, 0, 3, 0, 0, 0, 1, 2],
-    #     [1, 2, 0, 0, 0, 7, 4, 0, 0],
-    #     [0, 4, 9, 2, 0, 6, 0, 0, 7]
-    # ]
 
     original = copy.deepcopy(board)
     pprint.pprint(board)
@@ -248,21 +250,9 @@ def format_board(board):
 def test_solver():
     boards = read_sudoku_tests()
 
-    # pprint.pprint(boards)
-    # print(len(boards[0][0]))
     for i in range(len(boards)):
         boards[i][0] = format_board(boards[i][0])
         boards[i][1] = format_board(boards[i][1])
-        # # sanity checks
-        # print(i, "\n")
-        # print(boards[i][0][0])
-        # print(len(boards[i][0]))
-        # for row in boards[i][0]:
-        #     print(len(row))
-
-        # return
-
-    # pprint.pprint(boards[0])
 
     counter = 0
     for board in boards[:1]:
@@ -272,12 +262,11 @@ def test_solver():
         pprint.pprint(board[1])
         assert (is_valid_sudoku(board[0]) is True)
         assert (is_valid_sudoku(board[1]) is True)
-        # assert (board[0] == board[1])
 
 
 # test_find_next_empty()
 # test_is_valid()
 # test_get_limits()
 # main()
-# get_new_puzzle("easy")
-test_solver()
+get_new_puzzle("hard")
+# test_solver()
