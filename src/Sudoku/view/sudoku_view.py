@@ -90,7 +90,8 @@ class SudokuMainWindow(QWidget):
         self.update()
 
     def clear_board(self):
-        pass
+        index = self.sudoku_view.currentIndex()
+        self.model.setData(index, value=QVariant, role=Qt.UserRole)
 
     def solve_board(self):
         pass

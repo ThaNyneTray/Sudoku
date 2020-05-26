@@ -23,6 +23,9 @@ class Sudoku:
     def get_board(self):
         return self._board
 
+    def get_original_board(self):
+        return self._original_board
+
     # currently only checks if the row, col, and box placement is valid. No look ahead offered
     #   for when a valid placement will led to a non-solution down the line
     def add_value(self, pos, value, board):

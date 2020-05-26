@@ -78,6 +78,8 @@ class SudokuModel(QAbstractTableModel):
                 return QBrush(QColor(255, 0, 0, 127))
             return QBrush(QColor(0, 0, 0, 0))
 
+        # elif role == Qt.UserRole:
+
         # allows cells to be editable - must be reimplemented for edit functionality
 
     def setData(self, index, value, role=Qt.EditRole):
@@ -90,6 +92,9 @@ class SudokuModel(QAbstractTableModel):
             self.dataChanged.emit(top_left, bottom_right)
         elif role == Qt.BackgroundRole:
             # self._highlight_invalid = True
+            self.dataChanged.emit(top_left, bottom_right)
+        elif role == Qt.UserRole:
+            self._board = self._sudoku.get_original_board()
             self.dataChanged.emit(top_left, bottom_right)
 
         return True
