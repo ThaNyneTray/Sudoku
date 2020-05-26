@@ -6,17 +6,21 @@ from pip._vendor import requests
 class Sudoku:
 
     def __init__(self):
-        self._original_board = None
-        self._board = None
         self._level = "medium"
-        self._solver = None
+        self.generate_puzzle()
 
     def generate_puzzle(self):
+        # request a puzzle
         response = requests.get("https://sugoku.herokuapp.com/board", params={"difficulty": self._level})
         response_dict = json.loads(response.text)
+
+        # save it in class variables
         self._original_board = response_dict['board']
         self._board = copy.deepcopy(self._original_board)
         self._solver = SudokuSolver(self._board)
+        return self._board
+
+    def get_board(self):
         return self._board
 
     # currently only checks if the row, col, and box placement is valid. No look ahead offered
@@ -24,6 +28,7 @@ class Sudoku:
     def add_value(self, pos, value, board):
         # board[pos[0]][pos[1]] = value
         solver = SudokuSolver(self._board)
+        # print(self._board == board)
         valid = solver.is_valid_spot(pos[0], pos[1], value)
         if valid:
             return True
@@ -33,7 +38,6 @@ class Sudoku:
 
 
 class SudokuSolver:
-
     def __init__(self, board):
         self._board = copy.deepcopy(board)
         self._solvable = True

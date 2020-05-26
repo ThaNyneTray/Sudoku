@@ -1,5 +1,5 @@
-from PyQt5.QtCore import Qt
-from PyQt5.QtGui import QFont
+from PyQt5.QtCore import Qt, QModelIndex
+from PyQt5.QtGui import QFont, QPalette, QBrush
 from PyQt5.QtWidgets import QMainWindow, QTableView, QVBoxLayout, QHBoxLayout, QPushButton, QWidget
 
 
@@ -19,6 +19,12 @@ class SudokuMainWindow(QWidget):
         self.sudoku_view.verticalHeader().hide()
         self.sudoku_view.horizontalHeader().hide()
         self.sudoku_view.setFont(QFont("Times", 20))
+        # self.sudoku_view.setFocusPolicy(Qt.NoFocus)
+
+        # change palette - to change highlighting color
+        palette = self.sudoku_view.palette()
+        palette.setBrush(QPalette.Highlight, QBrush(Qt.lightGray))
+        self.sudoku_view.setPalette(palette)
 
         # resize the
         for col in range(9):
@@ -58,5 +64,16 @@ class SudokuMainWindow(QWidget):
         self.setWindowTitle("Sudoku")
         self.show()
 
-
-
+    # def keyPressEvent(self, event):
+    #     print(self.sudoku_view.selectedIndexes()[0].row())
+    #     if event.key() == Qt.Key_Left or event.key() == Qt.Key_Right:
+    #         print("here")
+    #         QTableView.keyPressEvent(self.sudoku_view, event)
+    #
+    #         row = self.sudoku_view.selectedIndexes()[0].row()
+    #         if row != 0:
+    #             self.sudoku_view.selectRow(row-1)
+    #
+    #     elif event.key() == Qt.RightArrow:
+    #         print("here")
+    #         pass
