@@ -86,15 +86,23 @@ class SudokuModel(QAbstractTableModel):
         row, column = index.row(), index.column()
         top_left = self.createIndex(0, 0)
         bottom_right = self.createIndex(len(self._board)-1, len(self._board[0])-1)
+
         if role == Qt.EditRole:
             self.check_placement(row, column, value)
             self._board[row][column] = int(value)
             self.dataChanged.emit(top_left, bottom_right)
+
         elif role == Qt.BackgroundRole:
             # self._highlight_invalid = True
             self.dataChanged.emit(top_left, bottom_right)
+
         elif role == Qt.UserRole:
             self._board = self._sudoku.get_original_board()
+            self.dataChanged.emit(top_left, bottom_right)
+
+        elif role == Qt.UserRole + 1:
+            solved_board = self._sudoku.solve()
+            self._board = solved_board
             self.dataChanged.emit(top_left, bottom_right)
 
         return True

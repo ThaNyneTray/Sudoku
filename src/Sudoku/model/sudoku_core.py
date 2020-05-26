@@ -39,6 +39,9 @@ class Sudoku:
             self._board[pos[0]][pos[1]] = 0
             return False
 
+    def solve(self):
+        self._solver.solve()
+        return self._solver.return_solved_board()
 
 class SudokuSolver:
     def __init__(self, board):
@@ -46,6 +49,9 @@ class SudokuSolver:
         self._solvable = True
         # self.solve()
         # self._row =
+
+    def return_solved_board(self):
+        return self._board
 
     # set of functions to solve the board.
     def solve(self):
