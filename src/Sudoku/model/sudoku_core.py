@@ -73,7 +73,6 @@ class SudokuSolver:
         return 8, 8
 
     def is_valid_spot(self, row, col, num):
-
         for i in range(9):
             if self._board [i][col] == num:
                 return False

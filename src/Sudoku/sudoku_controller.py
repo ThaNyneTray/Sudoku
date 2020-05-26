@@ -18,6 +18,7 @@ sys._excepthook = sys.excepthook
 # Set the exception hook to our wrapping function
 sys.excepthook = my_exception_hook
 
+
 def main():
     app = QApplication(sys.argv)
     sudoku = Sudoku()

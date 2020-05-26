@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QStyledItemDelegate
 
 class SudokuItemDelegate(QStyledItemDelegate):
 
+
     def __init__(self, parent=None):
         super().__init__(parent)
 
@@ -36,6 +37,12 @@ class SudokuModel(QAbstractTableModel):
                        for column in range(col_len)
                        if self._board[row][column] != 0]
 
+        # this will be used when showing the player where he has gone wrong.
+        self._invalid = set()
+        # this is a boolean highlighting how data() should color the background of the
+        # cells
+        self._highlight_invalid = False
+
     def rowCount(self, parent=QModelIndex()):
         return len(self._board)
 
@@ -66,16 +73,20 @@ class SudokuModel(QAbstractTableModel):
         elif role == Qt.FontRole:
             return QFont("Times", 20)
 
+        elif role == Qt.BackgroundRole:
+            if self._highlight_invalid and (row, column) in self._invalid:
+                return QBrush(QColor(255, 0, 0, 127))
+
         # allows cells to be editable - must be reimplemented for edit functionality
 
     def setData(self, index, value, role=Qt.EditRole):
         row, column = index.row(), index.column()
-        # self._valid = self._sudoku.add_value((row, column), int(value), self._board)
-        # valid = self._valid
+
         if role == Qt.EditRole:
-            if (row, column) in self._fixed:
-                return False
-        self._board[row][column] = int(value)
+            self.check_placement(row, column, value)
+            self._board[row][column] = int(value)
+        elif role == Qt.BackgroundRole:
+            self._highlight_invalid = True
         return True
 
     def flags(self, index):
@@ -83,4 +94,12 @@ class SudokuModel(QAbstractTableModel):
             return Qt.ItemIsEnabled | Qt.ItemIsSelectable
         return Qt.ItemIsEnabled | Qt.ItemIsEditable | Qt.ItemIsSelectable
 
+    # function checks if a placement is valid
+    def check_placement(self, row, column, value):
+        is_valid = self._sudoku.add_value((row, column), int(value), self._board)
 
+        if is_valid and (row, column) in self._valid:
+            self._invalid.remove((row, column))
+
+        elif not is_valid:
+            self._invalid.add((row, column))

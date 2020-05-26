@@ -64,16 +64,3 @@ class SudokuMainWindow(QWidget):
         self.setWindowTitle("Sudoku")
         self.show()
 
-    # def keyPressEvent(self, event):
-    #     print(self.sudoku_view.selectedIndexes()[0].row())
-    #     if event.key() == Qt.Key_Left or event.key() == Qt.Key_Right:
-    #         print("here")
-    #         QTableView.keyPressEvent(self.sudoku_view, event)
-    #
-    #         row = self.sudoku_view.selectedIndexes()[0].row()
-    #         if row != 0:
-    #             self.sudoku_view.selectRow(row-1)
-    #
-    #     elif event.key() == Qt.RightArrow:
-    #         print("here")
-    #         pass
