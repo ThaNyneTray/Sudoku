@@ -31,11 +31,7 @@ class SudokuModel(QAbstractTableModel):
 
         self._sudoku = sudoku
         self._board = self._sudoku.get_board()
-        row_len, col_len = len(self._board), len(self._board[0])
-        self._fixed = [(row, column)
-                       for row in range(row_len)
-                       for column in range(col_len)
-                       if self._board[row][column] != 0]
+        self.set_fixed_cells()
 
         # this will be used when showing the player where he has gone wrong.
         self._invalid = set()
@@ -90,27 +86,37 @@ class SudokuModel(QAbstractTableModel):
         if role == Qt.EditRole:
             self.check_placement(row, column, value)
             self._board[row][column] = int(value)
-            self.dataChanged.emit(top_left, bottom_right)
 
-        elif role == Qt.BackgroundRole:
-            # self._highlight_invalid = True
-            self.dataChanged.emit(top_left, bottom_right)
+        # elif role == Qt.BackgroundRole:
+        #     # self._highlight_invalid = True
+        #     self.dataChanged.emit(top_left, bottom_right)
 
         elif role == Qt.UserRole:
             self._board = self._sudoku.get_original_board()
-            self.dataChanged.emit(top_left, bottom_right)
 
         elif role == Qt.UserRole + 1:
             solved_board = self._sudoku.solve()
             self._board = solved_board
-            self.dataChanged.emit(top_left, bottom_right)
 
+        elif role == Qt.UserRole + 2:
+            new_board = self._sudoku.generate_puzzle()
+            self._board = new_board
+            self.set_fixed_cells()
+
+        self.dataChanged.emit(top_left, bottom_right)
         return True
 
     def flags(self, index):
         if (index.row(), index.column()) in self._fixed:
             return Qt.ItemIsEnabled | Qt.ItemIsSelectable
         return Qt.ItemIsEnabled | Qt.ItemIsEditable | Qt.ItemIsSelectable
+
+    def set_fixed_cells(self):
+        row_len, col_len = len(self._board), len(self._board[0])
+        self._fixed = [(row, column)
+                       for row in range(row_len)
+                       for column in range(col_len)
+                       if self._board[row][column] != 0]
 
     # function checks if a placement is valid
     def check_placement(self, row, column, value):
