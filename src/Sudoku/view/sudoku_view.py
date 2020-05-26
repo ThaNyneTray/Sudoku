@@ -1,5 +1,5 @@
-from PyQt5.QtCore import Qt, QModelIndex
-from PyQt5.QtGui import QFont, QPalette, QBrush
+from PyQt5.QtCore import Qt, QModelIndex, QVariant
+from PyQt5.QtGui import QFont, QPalette, QBrush, QColor
 from PyQt5.QtWidgets import QMainWindow, QTableView, QVBoxLayout, QHBoxLayout, QPushButton, QWidget
 
 
@@ -42,13 +42,24 @@ class SudokuMainWindow(QWidget):
         solve_btn.setToolTip("solve the puzzle for me")
 
         # create how am I doing? button
-        progress_btn = QPushButton('How Am I Doing')
-        progress_btn.setToolTip("highlight mistakes")
+        self.progress_btn = QPushButton('How Am I Doing')
+        self.progress_btn.setToolTip("highlight mistakes")
+        self.progress_highlight = False
+
+        # create how am I doing? button
+        # hide_progress_btn = QPushButton('Clear Highlights')
+        # hide_progress_btn.setToolTip("clear highlighted mistakes")
+
+        # connect buttons to slots
+        clear_btn.clicked.connect(self.clear_board)
+        solve_btn.clicked.connect(self.solve_board)
+        self.progress_btn.clicked.connect(self.show_progress)
+        # hide_progress_btn.clicked.connect(self.hide_progress)
 
         # create layout for buttons, and add them
         self.hbox = QHBoxLayout()
         self.hbox.addStretch(1)
-        self.hbox.addWidget(progress_btn)
+        self.hbox.addWidget(self.progress_btn)
         self.hbox.addWidget(clear_btn)
         self.hbox.addWidget(solve_btn)
         self.hbox.addStretch(1)
@@ -64,3 +75,22 @@ class SudokuMainWindow(QWidget):
         self.setWindowTitle("Sudoku")
         self.show()
 
+    def show_progress(self):
+        index = self.sudoku_view.currentIndex()
+        if self.progress_highlight == True:
+            self.progress_highlight = False
+            self.progress_btn.setText("How Am I Doing")
+            self.progress_btn.setToolTip("highlight mistakes")
+        else:
+            self.progress_highlight = True
+            self.progress_btn.setText("Hide Highlights")
+            self.progress_btn.setToolTip("hide highlighted mistakes")
+        self.model.set_highlight_mistakes()
+        self.model.setData(index, value=QVariant(), role=Qt.BackgroundRole)
+        self.update()
+
+    def clear_board(self):
+        pass
+
+    def solve_board(self):
+        pass

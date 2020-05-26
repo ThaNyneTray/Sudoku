@@ -76,17 +76,22 @@ class SudokuModel(QAbstractTableModel):
         elif role == Qt.BackgroundRole:
             if self._highlight_invalid and (row, column) in self._invalid:
                 return QBrush(QColor(255, 0, 0, 127))
+            return QBrush(QColor(0, 0, 0, 0))
 
         # allows cells to be editable - must be reimplemented for edit functionality
 
     def setData(self, index, value, role=Qt.EditRole):
         row, column = index.row(), index.column()
-
+        top_left = self.createIndex(0, 0)
+        bottom_right = self.createIndex(len(self._board)-1, len(self._board[0])-1)
         if role == Qt.EditRole:
             self.check_placement(row, column, value)
             self._board[row][column] = int(value)
+            self.dataChanged.emit(top_left, bottom_right)
         elif role == Qt.BackgroundRole:
-            self._highlight_invalid = True
+            # self._highlight_invalid = True
+            self.dataChanged.emit(top_left, bottom_right)
+
         return True
 
     def flags(self, index):
@@ -98,8 +103,14 @@ class SudokuModel(QAbstractTableModel):
     def check_placement(self, row, column, value):
         is_valid = self._sudoku.add_value((row, column), int(value), self._board)
 
-        if is_valid and (row, column) in self._valid:
+        if is_valid and (row, column) in self._invalid:
             self._invalid.remove((row, column))
 
         elif not is_valid:
+            print("here")
             self._invalid.add((row, column))
+
+    # this is a quick dirty fix to the problem of deciding when to highlight
+    # TODO: fix this later
+    def set_highlight_mistakes(self):
+        self._highlight_invalid = not self._highlight_invalid

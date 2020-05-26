@@ -74,18 +74,18 @@ class SudokuSolver:
 
     def is_valid_spot(self, row, col, num):
         for i in range(9):
-            if self._board [i][col] == num:
+            if self._board[i][col] == num:
                 return False
 
         for j in range(9):
             # print(row, j)
-            if self._board [row][j] == num:
+            if self._board[row][j] == num:
                 return False
 
         srow, scol, erow, ecol = self.get_limits(row, col)
         for i in range(srow, erow):
             for j in range(scol, ecol):
-                if self._board [i][j] == num:
+                if self._board[i][j] == num:
                     return False
 
         return True
