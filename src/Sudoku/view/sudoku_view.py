@@ -1,6 +1,6 @@
 from PyQt5.QtCore import Qt, QModelIndex, QVariant
 from PyQt5.QtGui import QFont, QPalette, QBrush, QColor
-from PyQt5.QtWidgets import QMainWindow, QTableView, QVBoxLayout, QHBoxLayout, QPushButton, QWidget
+from PyQt5.QtWidgets import QMainWindow, QTableView, QVBoxLayout, QHBoxLayout, QPushButton, QWidget, QTableWidget
 
 
 class SudokuMainWindow(QWidget):
@@ -32,6 +32,9 @@ class SudokuMainWindow(QWidget):
 
         for row in range(9):
             self.sudoku_view.setRowHeight(row, 90)
+
+        # # create tablewidget to act as grid lines
+        # self.grid_lines = QTableWidget(3, 3, self)
 
         # create clear button
         self.clear_btn = QPushButton('Clear')
@@ -79,6 +82,8 @@ class SudokuMainWindow(QWidget):
         self.setFixedSize(860, 915)
         self.setWindowTitle("Sudoku")
         self.show()
+
+
 
     def show_progress(self):
         index = self.sudoku_view.currentIndex()

@@ -1,34 +1,11 @@
 from PyQt5.QtCore import QAbstractTableModel, QModelIndex, Qt, QVariant
 from PyQt5.QtGui import QColor, QFont, QBrush
-from PyQt5.QtWidgets import QStyledItemDelegate
-
-
-class SudokuItemDelegate(QStyledItemDelegate):
-
-
-    def __init__(self, parent=None):
-        super().__init__(parent)
-
-    def paint(self, painter, option, index):
-        # print(Qt.UserRole, index.data())
-        # print(option.displayAlignment)
-        # if index.data() == Qt.UserRole:
-        #     print("here")
-        #     painter.setPen(QColor.red)
-        #     painter.drawRect(option.rect)
-        # else:
-        #     super().paint(painter, option, index)
-        super().paint(painter, option, index)
-
-    def sizeHint(self, option, index):
-        return super().sizeHint(option, index)
 
 
 class SudokuModel(QAbstractTableModel):
 
     def __init__(self, sudoku):
         super().__init__()
-
         self._sudoku = sudoku
         self._board = self._sudoku.get_board()
         self.set_fixed_cells()
