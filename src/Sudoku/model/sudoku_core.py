@@ -1,5 +1,7 @@
 import copy
 import json
+
+from PyQt5.QtCore import QRunnable, pyqtSlot, QThreadPool
 from pip._vendor import requests
 from pprint import pprint
 
@@ -68,7 +70,7 @@ class SudokuSolver:
     def return_solved_board(self):
         return self._board
 
-    # set of functions to solve the board.
+    # # set of functions to solve the board.
     def solve(self):
 
         row, col = self.find_next_empty()
@@ -87,6 +89,26 @@ class SudokuSolver:
 
         self._solvable = False
         return False
+
+        # set of functions to solve the board.
+    # def solve(self, board):
+    #
+    #     row, col = self.find_next_empty()
+    #     if row == col == 8:
+    #         return True
+    #
+    #     for num in range(1, 10):
+    #         if self.is_valid_spot(row, col, num):
+    #             board[row][col] = num
+    #             solved = self.solve()
+    #             if solved:
+    #                 self._solvable = True
+    #                 return True
+    #             else:
+    #                 board[row][col] = 0
+    #
+    #     self._solvable = False
+    #     return False
 
     # this one is a variation of the above. It finds all valid placements
     # for all empty spots in a given board.
@@ -178,15 +200,40 @@ class SudokuSolver:
                     return False
         return True
 
+    def solve_thread(self):
+        print("inside solve_thread")
+        threadpool = QThreadPool()
+        worker = Worker(self.solve, self._board)
+        threadpool.start(worker)
+
+
+class Worker(QRunnable):
+
+    def __init__(self, fn, board):
+        super().__init__()
+
+        self.fn = fn
+        self.board = board
+
+    @pyqtSlot()
+    def run(self):
+        self.fn()
+        print("in thread")
+
+
 
 def main():
     sudoku = Sudoku()
     pprint(sudoku.get_board())
-    original = copy.deepcopy(sudoku._solver.initialize_valid_placements())
-    sudoku._solver.find_valid_spots()
-    print("Valid spots")
-    pprint(sudoku._solver._valid_spots)
-    print(sudoku._solver._valid_spots == original)
+    sudoku._solver.solve_thread()
+    pprint(sudoku._board)
+
+    # pprint(sudoku.get_board())
+    # original = copy.deepcopy(sudoku._solver.initialize_valid_placements())
+    # sudoku._solver.find_valid_spots()
+    # print("Valid spots")
+    # pprint(sudoku._solver._valid_spots)
+    # print(sudoku._solver._valid_spots == original)
 
 
 if __name__ == "__main__":
