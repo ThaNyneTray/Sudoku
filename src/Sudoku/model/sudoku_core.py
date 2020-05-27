@@ -1,6 +1,7 @@
 import copy
 import json
 from pip._vendor import requests
+from pprint import pprint
 
 
 class Sudoku:
@@ -31,7 +32,6 @@ class Sudoku:
     def add_value(self, pos, value, board):
         # board[pos[0]][pos[1]] = value
         solver = SudokuSolver(self._board)
-        # print(self._board == board)
         valid = solver.is_valid_spot(pos[0], pos[1], value)
         if valid:
             return True
@@ -46,9 +46,24 @@ class Sudoku:
 class SudokuSolver:
     def __init__(self, board):
         self._board = copy.deepcopy(board)
+        self._valid_spots = self.initialize_valid_placements()
         self._solvable = True
         # self.solve()
         # self._row =
+
+    def initialize_valid_placements(self):
+        row_num = len(self._board)
+        col_num = len(self._board[0])
+        valid_spots = {(row, col): set()
+                       for row in range(row_num)
+                       for col in range(col_num)
+                       if self._board[row][col] == 0}
+        for row, col in valid_spots:
+                for num in range(1, 10):
+                    if self.is_valid_spot(row, col, num):
+                        valid_spots[(row, col)].add(num)
+
+        return valid_spots
 
     def return_solved_board(self):
         return self._board
@@ -73,6 +88,25 @@ class SudokuSolver:
         self._solvable = False
         return False
 
+    # this one is a variation of the above. It finds all valid placements
+    # for all empty spots in a given board.
+    def find_valid_spots(self):
+
+        row, col = self.find_next_empty()
+        if row == col == 8:
+            return True
+
+        for num in self._valid_spots[(row, col)]:
+            self._board[row][col] = num
+            solved = self.find_valid_spots()
+            if not solved:
+                self._valid_spots[(row, col)].remove(num)
+
+        if self._valid_spots[(row, col)]:
+            return True
+
+        return False
+
     def find_next_empty(self):
         for row in range(0, 9):
             for col in range(0, 9):
@@ -87,7 +121,6 @@ class SudokuSolver:
                 return False
 
         for j in range(9):
-            # print(row, j)
             if self._board[row][j] == num:
                 return False
 
@@ -144,3 +177,17 @@ class SudokuSolver:
                 if self.line_valid(box) is False:
                     return False
         return True
+
+
+def main():
+    sudoku = Sudoku()
+    pprint(sudoku.get_board())
+    original = copy.deepcopy(sudoku._solver.initialize_valid_placements())
+    sudoku._solver.find_valid_spots()
+    print("Valid spots")
+    pprint(sudoku._solver._valid_spots)
+    print(sudoku._solver._valid_spots == original)
+
+
+if __name__ == "__main__":
+    main()
